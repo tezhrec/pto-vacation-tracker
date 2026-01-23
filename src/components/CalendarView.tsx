@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { SelectedDay } from '../types';
 import { formatDate, getDaysInMonth, getFirstDayOfMonth, MONTH_NAMES, isWeekend } from '../utils/dateHelpers';
 
@@ -12,6 +12,23 @@ interface CalendarViewProps {
 
 export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDates }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+
+  const vacationDaysList = useMemo(() => {
+    return selectedDays
+      .filter(d => !d.isFederalHoliday)
+      .map(d => {
+        const date = new Date(d.date);
+        return {
+          date: d.date,
+          dateObj: date,
+          month: date.getMonth(),
+          day: date.getDate(),
+          monthName: MONTH_NAMES[date.getMonth()],
+          dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        };
+      })
+      .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+  }, [selectedDays]);
 
   const daysInMonth = getDaysInMonth(year, currentMonth);
   const firstDayOfMonth = getFirstDayOfMonth(year, currentMonth);
@@ -112,6 +129,36 @@ export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDa
           <span className="text-gray-600 dark:text-gray-400">Weekend</span>
         </div>
       </div>
+
+      {vacationDaysList.length > 0 && (
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 mb-3">
+            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+              Selected Vacation Days ({vacationDaysList.length})
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {vacationDaysList.map((day) => (
+              <button
+                key={day.date}
+                onClick={() => setCurrentMonth(day.month)}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors text-left group"
+              >
+                <div className="flex-1">
+                  <div className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                    {day.dayOfWeek}
+                  </div>
+                  <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    {day.monthName} {day.day}
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-blue-500 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
