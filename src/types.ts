@@ -1,7 +1,6 @@
 export interface UserSettings {
   totalPTOHours: number;
   hoursPerDay: number;
-  currentYear: number;
   darkMode: boolean;
 }
 

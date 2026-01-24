@@ -5,7 +5,7 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { PTOSummary } from './components/PTOSummary';
 import { CalendarView } from './components/CalendarView';
 import { FederalHolidayList } from './components/FederalHolidayList';
-import { getFederalHolidaysForYear } from './utils/federalHolidays';
+import { getFederalHolidays } from './utils/federalHolidays';
 import { exportToCSV, importFromCSV } from './utils/csvHelpers';
 import { Download, Upload, AlertCircle, CheckCircle, Github } from 'lucide-react';
 
@@ -17,7 +17,6 @@ function App() {
   const [settings, setSettings] = useLocalStorage<UserSettings>('pto-settings', {
     totalPTOHours: 120,
     hoursPerDay: 8,
-    currentYear: currentYear,
     darkMode: false,
   });
 
@@ -32,8 +31,8 @@ function App() {
   const [selectedDays, setSelectedDays] = useLocalStorage<SelectedDay[]>('pto-selected-days', []);
 
   const federalHolidays = useMemo(() => {
-    return getFederalHolidaysForYear(settings.currentYear);
-  }, [settings.currentYear]);
+    return getFederalHolidays();
+  }, []);
 
   const federalHolidayDates = useMemo(() => {
     return new Set(federalHolidays.map(h => h.date));
@@ -85,7 +84,7 @@ function App() {
         showNotification('error', 'No vacation days to export');
         return;
       }
-      exportToCSV(selectedDays, settings.currentYear);
+      exportToCSV(selectedDays, currentYear);
       showNotification('success', `Exported ${selectedDays.length} vacation days`);
     } catch (error) {
       showNotification('error', 'Failed to export data');
@@ -159,7 +158,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <CalendarView
-              year={settings.currentYear}
+              year={currentYear}
               selectedDays={selectedDays}
               onDayToggle={handleDayToggle}
               onHalfDayToggle={handleHalfDayToggle}

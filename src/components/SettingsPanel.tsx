@@ -7,9 +7,6 @@ interface SettingsPanelProps {
 }
 
 export function SettingsPanel({ settings, onSettingsChange }: SettingsPanelProps) {
-  const currentYear = new Date().getFullYear();
-  const years = [currentYear - 1, currentYear, currentYear + 1];
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
       <div className="flex items-center gap-2 mb-4">
@@ -78,24 +75,6 @@ export function SettingsPanel({ settings, onSettingsChange }: SettingsPanelProps
             })}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Year
-          </label>
-          <select
-            value={settings.currentYear}
-            onChange={(e) => onSettingsChange({
-              ...settings,
-              currentYear: Number(e.target.value)
-            })}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          >
-            {years.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
         </div>
       </div>
     </div>
