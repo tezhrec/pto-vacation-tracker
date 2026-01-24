@@ -4,13 +4,15 @@ A modern, intuitive web application for planning and tracking your paid time off
 
 ## Overview
 
-PTO Vacation Tracker helps you plan your vacation days effectively by providing a visual calendar interface to select dates, automatically tracking federal holidays, and calculating your remaining PTO hours in real-time. All data is stored locally in your browser, ensuring your vacation plans remain private.
+PTO Vacation Tracker helps you plan your vacation days effectively for any year from 2026 to 2035. It provides a visual calendar interface to select dates, automatically calculates federal holidays for each year, supports half-day PTO tracking, and calculates your remaining PTO hours in real-time. All data is stored locally in your browser, ensuring your vacation plans remain private.
 
 ## Features
 
 ### Core Functionality
 - **Interactive Calendar View**: Click to select vacation days with an intuitive month-by-month calendar
-- **Federal Holiday Management**: Built-in federal holidays for 2024-2026 that can be selected or deselected
+- **Multi-Year Planning**: Plan your vacation for any year from 2026 to 2035 with automatic federal holiday calculation
+- **Half-Day Support**: Mark vacation days as half-days (4 hours) to optimize your PTO usage
+- **Federal Holiday Management**: Automatically calculated federal holidays that can be selected or deselected
 - **PTO Summary Dashboard**: Real-time tracking of total PTO, used hours, and remaining balance
 - **Visual Date List**: See all selected vacation days organized chronologically with quick navigation
 
@@ -18,10 +20,11 @@ PTO Vacation Tracker helps you plan your vacation days effectively by providing 
 - **Configurable Settings**:
   - Set your total annual PTO hours
   - Configure daily work hours (typically 8 hours)
-  - Switch between different years
   - Toggle dark mode for comfortable viewing
+- **Year Selection**: Switch between years 2026-2035 using the planning year selector
 - **Weekend Indicators**: Weekends are automatically highlighted to help with planning
 - **Smart Holiday Tracking**: Federal holidays don't count against your PTO balance
+- **Flexible PTO Usage**: Mark days as full-day (8 hours) or half-day (4 hours)
 
 ### Data Management
 - **CSV Export**: Download your vacation schedule as a CSV file for backup or sharing
@@ -77,28 +80,38 @@ npm run dev
 
 ### Getting Started
 
-1. **Configure Your Settings** (right sidebar):
+1. **Select Your Planning Year**:
+   - Use the year selector at the top of the page
+   - Choose any year from 2026 to 2035
+   - Federal holidays are automatically calculated for the selected year
+
+2. **Configure Your Settings** (right sidebar):
    - Enter your total annual PTO hours
    - Set your daily work hours
-   - Select the year you want to plan
    - Toggle dark mode if preferred
 
-2. **Select Federal Holidays**:
-   - Review the list of federal holidays
+3. **Select Federal Holidays**:
+   - Review the list of federal holidays for your selected year
    - Check the holidays you observe at your workplace
    - Selected holidays appear on the calendar in green and don't count against your PTO
 
-3. **Plan Your Vacation Days**:
+4. **Plan Your Vacation Days**:
    - Navigate through months using the arrow buttons
    - Click any date to mark it as a vacation day (appears in blue)
    - Click again to deselect a day
    - View your selected days in the list below the calendar
    - Click a date in the list to jump to that month
 
-4. **Monitor Your PTO Balance**:
+5. **Optimize with Half-Days**:
+   - In the vacation days list below the calendar, each day shows a checkbox
+   - Check the box to mark a day as a half-day (4 hours instead of 8 hours)
+   - The hour indicator next to the checkbox shows "4h" or "8h"
+   - Use half-days to stretch your PTO further
+
+6. **Monitor Your PTO Balance**:
    - The PTO Summary card shows your total hours, used hours, and remaining balance
    - Watch the progress bar to visualize your PTO usage
-   - The summary updates instantly as you select or deselect days
+   - The summary updates instantly as you select or deselect days, including half-day calculations
 
 ### Exporting Your Schedule
 
@@ -113,12 +126,13 @@ npm run dev
 3. Your vacation days will be restored
 4. Any existing selections will be replaced with the imported data
 
-### Color Legend
+### Visual Indicators
 
 - **Blue**: Selected vacation days (count against PTO)
 - **Green**: Selected federal holidays (don't count against PTO)
 - **Light Green Border**: Unselected federal holidays
 - **Gray Background**: Weekends
+- **Checkbox with 4h/8h**: Toggle between half-day and full-day for vacation days
 
 ## Development Commands
 
