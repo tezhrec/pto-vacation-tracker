@@ -17,7 +17,8 @@ export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDa
     return selectedDays
       .filter(d => !d.isFederalHoliday)
       .map(d => {
-        const date = new Date(d.date);
+        const [yearStr, monthStr, dayStr] = d.date.split('-');
+        const date = new Date(parseInt(yearStr), parseInt(monthStr) - 1, parseInt(dayStr));
         return {
           date: d.date,
           dateObj: date,
