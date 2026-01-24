@@ -7,7 +7,7 @@ import { CalendarView } from './components/CalendarView';
 import { FederalHolidayList } from './components/FederalHolidayList';
 import { getFederalHolidaysForYear } from './utils/federalHolidays';
 import { exportToCSV, importFromCSV } from './utils/csvHelpers';
-import { Download, Upload, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle, Github } from 'lucide-react';
 
 function App() {
   const currentYear = new Date().getFullYear();
@@ -120,7 +120,15 @@ function App() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div>
               <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">PTO Vacation Tracker</h1>
-              <p className="text-gray-600 dark:text-gray-400">Plan your time off and track your remaining PTO hours</p>
+              <a
+                href="https://github.com/yourusername/pto-vacation-tracker"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <Github className="w-4 h-4" />
+                <span>View on GitHub</span>
+              </a>
             </div>
             <div className="flex gap-2">
               <button
