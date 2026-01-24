@@ -5,14 +5,15 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { PTOSummary } from './components/PTOSummary';
 import { CalendarView } from './components/CalendarView';
 import { FederalHolidayList } from './components/FederalHolidayList';
-import { getFederalHolidays } from './utils/federalHolidays';
+import { getFederalHolidaysForYear } from './utils/federalHolidays';
 import { exportToCSV, importFromCSV } from './utils/csvHelpers';
-import { Download, Upload, AlertCircle, CheckCircle, Github } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle, Github, Calendar } from 'lucide-react';
 
 function App() {
   const currentYear = new Date().getFullYear();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const [settings, setSettings] = useLocalStorage<UserSettings>('pto-settings', {
     totalPTOHours: 120,
@@ -31,8 +32,8 @@ function App() {
   const [selectedDays, setSelectedDays] = useLocalStorage<SelectedDay[]>('pto-selected-days', []);
 
   const federalHolidays = useMemo(() => {
-    return getFederalHolidays();
-  }, []);
+    return getFederalHolidaysForYear(selectedYear);
+  }, [selectedYear]);
 
   const federalHolidayDates = useMemo(() => {
     return new Set(federalHolidays.map(h => h.date));
@@ -84,7 +85,7 @@ function App() {
         showNotification('error', 'No vacation days to export');
         return;
       }
-      exportToCSV(selectedDays, currentYear);
+      exportToCSV(selectedDays, selectedYear);
       showNotification('success', `Exported ${selectedDays.length} vacation days`);
     } catch (error) {
       showNotification('error', 'Failed to export data');
@@ -146,6 +147,22 @@ function App() {
               </button>
             </div>
           </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Planning Year:</span>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium"
+              >
+                {Array.from({ length: 10 }, (_, i) => 2026 + i).map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          </div>
           <input
             ref={fileInputRef}
             type="file"
@@ -158,7 +175,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <CalendarView
-              year={currentYear}
+              year={selectedYear}
               selectedDays={selectedDays}
               onDayToggle={handleDayToggle}
               onHalfDayToggle={handleHalfDayToggle}
