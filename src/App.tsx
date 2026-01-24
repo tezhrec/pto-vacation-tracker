@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { UserSettings, SelectedDay } from './types';
 import { SettingsPanel } from './components/SettingsPanel';
@@ -6,9 +6,13 @@ import { PTOSummary } from './components/PTOSummary';
 import { CalendarView } from './components/CalendarView';
 import { FederalHolidayList } from './components/FederalHolidayList';
 import { getFederalHolidaysForYear } from './utils/federalHolidays';
+import { exportToCSV, importFromCSV } from './utils/csvHelpers';
+import { Download, Upload, AlertCircle, CheckCircle } from 'lucide-react';
 
 function App() {
   const currentYear = new Date().getFullYear();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const [settings, setSettings] = useLocalStorage<UserSettings>('pto-settings', {
     totalPTOHours: 120,
@@ -59,12 +63,78 @@ function App() {
   const vacationDaysCount = selectedDays.filter(d => !d.isFederalHoliday).length;
   const usedHours = vacationDaysCount * settings.hoursPerDay;
 
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleExport = () => {
+    try {
+      if (selectedDays.length === 0) {
+        showNotification('error', 'No vacation days to export');
+        return;
+      }
+      exportToCSV(selectedDays, settings.currentYear);
+      showNotification('success', `Exported ${selectedDays.length} vacation days`);
+    } catch (error) {
+      showNotification('error', 'Failed to export data');
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const importedDays = await importFromCSV(file);
+      setSelectedDays(importedDays);
+      showNotification('success', `Imported ${importedDays.length} vacation days`);
+    } catch (error) {
+      showNotification('error', error instanceof Error ? error.message : 'Failed to import data');
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">PTO Vacation Tracker</h1>
-          <p className="text-gray-600 dark:text-gray-400">Plan your time off and track your remaining PTO hours</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">PTO Vacation Tracker</h1>
+              <p className="text-gray-600 dark:text-gray-400">Plan your time off and track your remaining PTO hours</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleImportClick}
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="font-medium">Import CSV</span>
+              </button>
+              <button
+                onClick={handleExport}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+              >
+                <Download className="w-4 h-4" />
+                <span className="font-medium">Export CSV</span>
+              </button>
+            </div>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -91,6 +161,25 @@ function App() {
             />
           </div>
         </div>
+
+        {notification && (
+          <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+            <div
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
+                notification.type === 'success'
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-red-500 text-white'
+              }`}
+            >
+              {notification.type === 'success' ? (
+                <CheckCircle className="w-5 h-5" />
+              ) : (
+                <AlertCircle className="w-5 h-5" />
+              )}
+              <span className="font-medium">{notification.message}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
