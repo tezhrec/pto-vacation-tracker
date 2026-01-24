@@ -1,10 +1,11 @@
 import { SelectedDay } from '../types';
 
 export function exportToCSV(selectedDays: SelectedDay[], year: number): void {
-  const headers = ['Date', 'Is Federal Holiday'];
+  const headers = ['Date', 'Is Federal Holiday', 'Is Half Day'];
   const rows = selectedDays.map(day => [
     day.date,
-    day.isFederalHoliday ? 'true' : 'false'
+    day.isFederalHoliday ? 'true' : 'false',
+    day.isHalfDay ? 'true' : 'false'
   ]);
 
   const csvContent = [
@@ -45,7 +46,7 @@ export function importFromCSV(file: File): Promise<SelectedDay[]> {
         const selectedDays: SelectedDay[] = [];
 
         for (const line of dataLines) {
-          const [date, isFederalHolidayStr] = line.split(',').map(s => s.trim());
+          const [date, isFederalHolidayStr, isHalfDayStr] = line.split(',').map(s => s.trim());
 
           if (!date) continue;
 
@@ -57,7 +58,8 @@ export function importFromCSV(file: File): Promise<SelectedDay[]> {
 
           selectedDays.push({
             date,
-            isFederalHoliday: isFederalHolidayStr?.toLowerCase() === 'true'
+            isFederalHoliday: isFederalHolidayStr?.toLowerCase() === 'true',
+            isHalfDay: isHalfDayStr?.toLowerCase() === 'true'
           });
         }
 

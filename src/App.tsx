@@ -60,8 +60,19 @@ function App() {
     }
   };
 
+  const handleHalfDayToggle = (dateString: string) => {
+    setSelectedDays(selectedDays.map(d =>
+      d.date === dateString ? { ...d, isHalfDay: !d.isHalfDay } : d
+    ));
+  };
+
   const vacationDaysCount = selectedDays.filter(d => !d.isFederalHoliday).length;
-  const usedHours = vacationDaysCount * settings.hoursPerDay;
+  const usedHours = selectedDays
+    .filter(d => !d.isFederalHoliday)
+    .reduce((total, day) => {
+      const hours = day.isHalfDay ? settings.hoursPerDay / 2 : settings.hoursPerDay;
+      return total + hours;
+    }, 0);
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
@@ -143,6 +154,7 @@ function App() {
               year={settings.currentYear}
               selectedDays={selectedDays}
               onDayToggle={handleDayToggle}
+              onHalfDayToggle={handleHalfDayToggle}
               federalHolidayDates={federalHolidayDates}
             />
           </div>

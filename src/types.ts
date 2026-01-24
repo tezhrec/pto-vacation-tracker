@@ -8,6 +8,7 @@ export interface UserSettings {
 export interface SelectedDay {
   date: string;
   isFederalHoliday: boolean;
+  isHalfDay?: boolean;
 }
 
 export interface FederalHoliday {

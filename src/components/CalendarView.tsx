@@ -7,10 +7,11 @@ interface CalendarViewProps {
   year: number;
   selectedDays: SelectedDay[];
   onDayToggle: (dateString: string) => void;
+  onHalfDayToggle: (dateString: string) => void;
   federalHolidayDates: Set<string>;
 }
 
-export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDates }: CalendarViewProps) {
+export function CalendarView({ year, selectedDays, onDayToggle, onHalfDayToggle, federalHolidayDates }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
   const vacationDaysList = useMemo(() => {
@@ -26,6 +27,7 @@ export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDa
           day: date.getDate(),
           monthName: MONTH_NAMES[date.getMonth()],
           dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          isHalfDay: d.isHalfDay || false,
         };
       })
       .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
@@ -139,23 +141,40 @@ export function CalendarView({ year, selectedDays, onDayToggle, federalHolidayDa
               Selected Vacation Days ({vacationDaysList.length})
             </h3>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="space-y-2">
             {vacationDaysList.map((day) => (
-              <button
+              <div
                 key={day.date}
-                onClick={() => setCurrentMonth(day.month)}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors text-left group"
+                className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg group"
               >
-                <div className="flex-1">
-                  <div className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                    {day.dayOfWeek}
+                <button
+                  onClick={() => setCurrentMonth(day.month)}
+                  className="flex items-center gap-2 flex-1 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors text-left px-1 -mx-1 py-1"
+                >
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                      {day.dayOfWeek}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                      {day.monthName} {day.day}
+                    </div>
                   </div>
-                  <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                    {day.monthName} {day.day}
-                  </div>
+                  <ChevronRight className="w-4 h-4 text-blue-500 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+                <div className="flex items-center gap-2 border-l border-blue-200 dark:border-blue-800 pl-2">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={day.isHalfDay}
+                      onChange={() => onHalfDayToggle(day.date)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                    />
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      {day.isHalfDay ? '4h' : '8h'}
+                    </span>
+                  </label>
                 </div>
-                <ChevronRight className="w-4 h-4 text-blue-500 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+              </div>
             ))}
           </div>
         </div>
