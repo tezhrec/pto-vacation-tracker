@@ -121,7 +121,7 @@ function App() {
             <div>
               <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">PTO Vacation Tracker</h1>
               <a
-                href="https://github.com/yourusername/pto-vacation-tracker"
+                href="https://github.com/tezhrec/pto-vacation-tracker"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
