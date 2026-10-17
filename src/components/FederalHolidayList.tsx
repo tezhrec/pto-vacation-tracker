@@ -25,6 +25,10 @@ export function FederalHolidayList({ holidays, selectedDays, onHolidayToggle }: 
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {holidays.map((holiday) => {
           const isSelected = selectedDatesSet.has(holiday.date);
+          const [yearStr] = holiday.date.split('-');
+          const holidayDate = new Date(parseInt(yearStr), holiday.month, holiday.day);
+          const isWeekend = holidayDate.getDay() === 0 || holidayDate.getDay() === 6;
+          const dayName = holidayDate.getDay() === 0 ? 'Sunday' : 'Saturday';
 
           return (
             <label
@@ -38,9 +42,16 @@ export function FederalHolidayList({ holidays, selectedDays, onHolidayToggle }: 
                 className="mt-1 w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 dark:border-gray-600 rounded"
               />
               <div className="flex-1">
-                <div className="font-medium text-gray-800 dark:text-gray-200">{holiday.name}</div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-medium text-gray-800 dark:text-gray-200">{holiday.name}</span>
+                  {isWeekend && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">
+                      Weekend (+8h Floating)
+                    </span>
+                  )}
+                </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {MONTH_NAMES[holiday.month]} {holiday.day}
+                  {MONTH_NAMES[holiday.month]} {holiday.day} {isWeekend ? `(${dayName})` : ''}
                 </div>
               </div>
             </label>

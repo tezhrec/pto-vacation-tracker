@@ -2,6 +2,7 @@ export interface UserSettings {
   totalPTOHours: number;
   hoursPerDay: number;
   darkMode: boolean;
+  autoWeekendFloatingHolidays?: boolean;
 }
 
 export interface SelectedDay {
@@ -15,4 +16,13 @@ export interface FederalHoliday {
   date: string;
   month: number;
   day: number;
+}
+
+export interface FloatingHoliday {
+  name: string;
+  date: string;
+  month: number;
+  day: number;
+  dayOfWeek: 'Saturday' | 'Sunday';
+  hours: number;
 }

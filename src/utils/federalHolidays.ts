@@ -1,4 +1,4 @@
-import { FederalHoliday } from '../types';
+import { FederalHoliday, FloatingHoliday } from '../types';
 
 function getNthWeekdayOfMonth(year: number, month: number, weekday: number, n: number): number {
   let count = 0;
@@ -72,3 +72,26 @@ export function getFederalHolidaysForYear(year: number): FederalHoliday[] {
 
   return FEDERAL_HOLIDAYS_CACHE.get(year)!;
 }
+
+export function getWeekendFederalHolidays(year: number, hoursPerHoliday: number = 8): FloatingHoliday[] {
+  const holidays = getFederalHolidaysForYear(year);
+  const weekendHolidays: FloatingHoliday[] = [];
+
+  for (const holiday of holidays) {
+    const date = new Date(year, holiday.month, holiday.day);
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      weekendHolidays.push({
+        name: holiday.name,
+        date: holiday.date,
+        month: holiday.month,
+        day: holiday.day,
+        dayOfWeek: dayOfWeek === 0 ? 'Sunday' : 'Saturday',
+        hours: hoursPerHoliday,
+      });
+    }
+  }
+
+  return weekendHolidays;
+}
+

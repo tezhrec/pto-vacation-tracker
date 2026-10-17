@@ -69,7 +69,7 @@ export function importFromCSV(file: File): Promise<SelectedDay[]> {
         }
 
         resolve(selectedDays);
-      } catch (error) {
+      } catch {
         reject(new Error('Failed to parse CSV file'));
       }
     };

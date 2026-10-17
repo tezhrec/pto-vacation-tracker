@@ -3,9 +3,10 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { UserSettings, SelectedDay } from './types';
 import { SettingsPanel } from './components/SettingsPanel';
 import { PTOSummary } from './components/PTOSummary';
+import { FloatingHolidayList } from './components/FloatingHolidayList';
 import { CalendarView } from './components/CalendarView';
 import { FederalHolidayList } from './components/FederalHolidayList';
-import { getFederalHolidaysForYear } from './utils/federalHolidays';
+import { getFederalHolidaysForYear, getWeekendFederalHolidays } from './utils/federalHolidays';
 import { exportToCSV, importFromCSV } from './utils/csvHelpers';
 import { Download, Upload, AlertCircle, CheckCircle, Github, Calendar } from 'lucide-react';
 
@@ -19,6 +20,7 @@ function App() {
     totalPTOHours: 120,
     hoursPerDay: 8,
     darkMode: false,
+    autoWeekendFloatingHolidays: true,
   });
 
   useEffect(() => {
@@ -38,6 +40,19 @@ function App() {
   const federalHolidayDates = useMemo(() => {
     return new Set(federalHolidays.map(h => h.date));
   }, [federalHolidays]);
+
+  const isAutoFloatingEnabled = settings.autoWeekendFloatingHolidays !== false;
+
+  const floatingHolidays = useMemo(() => {
+    return getWeekendFederalHolidays(selectedYear, 8);
+  }, [selectedYear]);
+
+  const totalFloatingHours = useMemo(() => {
+    return isAutoFloatingEnabled
+      ? floatingHolidays.reduce((sum, h) => sum + h.hours, 0)
+      : 0;
+  }, [isAutoFloatingEnabled, floatingHolidays]);
+
 
   const handleDayToggle = (dateString: string) => {
     const existingDay = selectedDays.find(d => d.date === dateString);
@@ -87,7 +102,7 @@ function App() {
       }
       exportToCSV(selectedDays, selectedYear);
       showNotification('success', `Exported ${selectedDays.length} vacation days`);
-    } catch (error) {
+    } catch {
       showNotification('error', 'Failed to export data');
     }
   };
@@ -189,6 +204,12 @@ function App() {
               totalHours={settings.totalPTOHours}
               usedHours={usedHours}
               vacationDays={vacationDaysCount}
+              floatingHours={isAutoFloatingEnabled ? totalFloatingHours : undefined}
+            />
+            <FloatingHolidayList
+              floatingHolidays={floatingHolidays}
+              year={selectedYear}
+              enabled={isAutoFloatingEnabled}
             />
             <FederalHolidayList
               holidays={federalHolidays}

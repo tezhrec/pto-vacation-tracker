@@ -1,0 +1,9 @@
+services:
+  pto-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pto-vacation-tracker
+    ports:
+      - "${PORT:-8088}:80"
+    restart: unless-stopped

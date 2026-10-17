@@ -1,12 +1,13 @@
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Sparkles } from 'lucide-react';
 
 interface PTOSummaryProps {
   totalHours: number;
   usedHours: number;
   vacationDays: number;
+  floatingHours?: number;
 }
 
-export function PTOSummary({ totalHours, usedHours, vacationDays }: PTOSummaryProps) {
+export function PTOSummary({ totalHours, usedHours, vacationDays, floatingHours }: PTOSummaryProps) {
   const remainingHours = totalHours - usedHours;
   const percentageUsed = totalHours > 0 ? (usedHours / totalHours) * 100 : 0;
 
@@ -61,6 +62,18 @@ export function PTOSummary({ totalHours, usedHours, vacationDays }: PTOSummaryPr
             <div className="text-xs text-gray-500 dark:text-gray-400">Remaining Hours</div>
           </div>
         </div>
+
+        {floatingHours !== undefined && floatingHours > 0 && (
+          <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/40 rounded-lg text-sm">
+            <span className="font-medium text-purple-800 dark:text-purple-300 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              Floating Holiday Bank
+            </span>
+            <span className="font-bold text-purple-700 dark:text-purple-300">
+              +{floatingHours} hrs
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

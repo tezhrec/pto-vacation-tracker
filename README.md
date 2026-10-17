@@ -13,6 +13,7 @@ PTO Vacation Tracker helps you plan your vacation days effectively for any year 
 - **Multi-Year Planning**: Plan your vacation for any year from 2026 to 2035 with automatic federal holiday calculation
 - **Half-Day Support**: Mark vacation days as half-days (4 hours) to optimize your PTO usage
 - **Federal Holiday Management**: Automatically calculated federal holidays that can be selected or deselected
+- **Automatic Weekend Floating Holidays**: Automatically award 8 floating hours when a federal holiday falls on a Saturday or Sunday, tracked in a dedicated floating bank
 - **PTO Summary Dashboard**: Real-time tracking of total PTO, used hours, and remaining balance
 - **Visual Date List**: See all selected vacation days organized chronologically with quick navigation
 
@@ -20,6 +21,7 @@ PTO Vacation Tracker helps you plan your vacation days effectively for any year 
 - **Configurable Settings**:
   - Set your total annual PTO hours
   - Configure daily work hours (typically 8 hours)
+  - Toggle automatic weekend floating holidays
   - Toggle dark mode for comfortable viewing
 - **Year Selection**: Switch between years 2026-2035 using the planning year selector
 - **Weekend Indicators**: Weekends are automatically highlighted to help with planning
@@ -141,6 +143,47 @@ npm run dev
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 - `npm run typecheck` - Check TypeScript types
+
+## Docker Deployment
+
+You can run the application in a production-ready container using either Docker Compose or standalone Docker.
+
+### Using Docker Compose (Recommended)
+
+1. Build and start the container in detached mode:
+```bash
+docker compose up -d --build
+```
+*(Optionally set a custom host port with `PORT=3000 docker compose up -d`)*
+
+2. Access the application in your browser at:
+```
+http://localhost:8088
+```
+
+3. To stop the container:
+```bash
+docker compose down
+```
+
+### Using Docker CLI
+
+1. Build the Docker image:
+```bash
+docker build -t pto-vacation-tracker .
+```
+
+2. Run the container:
+```bash
+docker run -d --name pto-vacation-tracker -p 8088:80 --restart unless-stopped pto-vacation-tracker
+```
+
+3. Access the application at `http://localhost:8088`.
+
+4. To stop and remove the container:
+```bash
+docker stop pto-vacation-tracker && docker rm pto-vacation-tracker
+```
 
 ## Data Storage
 
